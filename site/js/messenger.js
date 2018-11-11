@@ -55,7 +55,6 @@ var fullHaiku = line1 + "\n " + line2 + "\n" + line3;
   }
 
   function gogogo(){
-    m.message = 0;
     var shitty = document.getElementById("cityInput").value;
     console.log(shitty);
     var url = "http://api.openweathermap.org/data/2.5/weather?" + "q=" + shitty + "&APPID=" + APPID ;
@@ -153,13 +152,52 @@ var fullHaiku = line1 + "\n " + line2 + "\n" + line3;
     'use strict';
     var m = this;
 
+    switch (weathertype){
+      case "Rain":
+      line1 = "thunderstorm downfall";
+      line2 = "light soft gentle deluge fall";
+      line3 = "torrential weather";
+      break;
+
+      case "Clouds":
+      line1 = "bright heavy fog hide";
+      line2 = "gray gray low heavy mist spot";
+      line3 ="bright overcast strike";
+      break;
+
+      case "Drizzle":
+      line1 = "steady squirt rain splash";
+      line2 = "constant squirt rainfall rainfall";
+      line3 ="mist rain sprinkle splash";
+      break;
+
+      case "Clear":
+      line1 = "clear sunburn weather";
+      line2 = "little clear early clear light";
+      line3 ="strong daylight weather";
+      break;
+
+      case "Thunderstorm":
+      
+      line1 = "heavy lightning storm";
+      line2 = "big rainstorm violent storm";
+      line3 ="great severe storm storm";
+      break;
+
+      case "Mist":
+      line1 = "dark haze over strike"
+      line2 = "great low black mottle wallow"
+      line3 ="haze over impair"
+      break;
+    }
+
     m.init = function () {
       m.codeletters = "abcdefghijklmnopqrstuvwxyz";
       m.message = 0;
       m.current_length = 0;
       m.fadeBuffer = false;
       m.messages = [
-        line1, line2, line3, fullHaiku
+        line1, line2, line3
       ];
 
       setTimeout(m.animateIn, 100);
@@ -223,15 +261,15 @@ var fullHaiku = line1 + "\n " + line2 + "\n" + line3;
 
     m.cycleText = function () {
       m.message = m.message + 1;
-      
+    if(m.message >= m.messages.length){
+      m.message = 0;
+    }
 
       m.current_length = 0;
       m.fadeBuffer = false;
       $(el).html('');
 
-      if(m.message < 4){
-        setTimeout(m.animateIn, 200);
-      }
+      setTimeout(m.animateIn, 200);
     };
 
     m.init();
