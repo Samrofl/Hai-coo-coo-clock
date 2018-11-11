@@ -1,6 +1,6 @@
 window.onload = function () {
   var IPSTACK = "156aed5906a379aefdc0fa70b17fb022";
-  var APPID = "7e02c843cdea739dc1bac5aba10c56dd";
+  var APPID = "7559a17ed368794014b655adee626a02";
 
   var weatherdata;
   var temperature;
@@ -18,8 +18,10 @@ window.onload = function () {
   var line2 = "thick spanket of snow";
   var line3 = "with a winter wrap";
 
-  
 
+  
+  
+var fullHaiku = line1 + "\n " + line2 + "\n" + line3;
   function getCity() {
 
     var ipLookup = new XMLHttpRequest();
@@ -29,12 +31,14 @@ window.onload = function () {
         city = ipdata.city;
         country = ipdata.country_code;
         //document.getElementById("city").innerHTML = city;
+        console.log(country);
         updateByCity();
       }
 
-      ipLookup.open("GET", "http://api.ipstack.com/check?access_key=" + IPSTACK, true);
-      ipLookup.send();
-    }
+      
+    };
+    ipLookup.open("GET", "http://api.ipstack.com/check?access_key=" + IPSTACK, true);
+    ipLookup.send();
 
 
     //console.log();
@@ -42,10 +46,25 @@ window.onload = function () {
 
   }
 
+  //document.getElementById("cityButton").addEventListener("click", gogogo()); 
 
+  
+  document.getElementById("cityButton").onclick = function fun() {
+    gogogo();
+    //validation code to see State field is mandatory.  
+  }
 
+  function gogogo(){
+    m.message = 0;
+    var shitty = document.getElementById("cityInput").value;
+    console.log(shitty);
+    var url = "http://api.openweathermap.org/data/2.5/weather?" + "q=" + shitty + "&APPID=" + APPID ;
+    sendRequest(url);
+  }
+
+  
   function updateByCity() {
-    var url = "http://api.openweathermap.org/data/2.5/weather?" + "q=" + city + "," + country + "&APPID=" + APPID;
+    var url = "http://api.openweathermap.org/data/2.5/weather?" + "q=" + city + "," + country + "&APPID=" + APPID ;
     sendRequest(url);
   }
 
@@ -140,7 +159,7 @@ window.onload = function () {
       m.current_length = 0;
       m.fadeBuffer = false;
       m.messages = [
-        line1, line2, line3
+        line1, line2, line3, fullHaiku
       ];
 
       setTimeout(m.animateIn, 100);
@@ -204,15 +223,15 @@ window.onload = function () {
 
     m.cycleText = function () {
       m.message = m.message + 1;
-      if (m.message >= m.messages.length) {
-        m.message = 0;
-      }
+      
 
       m.current_length = 0;
       m.fadeBuffer = false;
       $(el).html('');
 
-      setTimeout(m.animateIn, 200);
+      if(m.message < 4){
+        setTimeout(m.animateIn, 200);
+      }
     };
 
     m.init();
