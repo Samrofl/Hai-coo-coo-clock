@@ -1,90 +1,226 @@
-var Messenger = function(el){
+window.onload = function () {
+  var IPSTACK = "156aed5906a379aefdc0fa70b17fb022";
+  var APPID = "7e02c843cdea739dc1bac5aba10c56dd";
+
+  var weatherdata;
+  var temperature;
+  var city;
+  var location;
+  var weatherdata;
+  var ipdata;
+  var weathertype;
+  var clouds;
+  var windSpeed;
+  var humidity;
+  var country;
+
+  var line1 = "thick wanket of snow";
+  var line2 = "thick spanket of snow";
+  var line3 = "with a winter wrap";
+
+  
+
+  function getCity() {
+
+    var ipLookup = new XMLHttpRequest();
+    ipLookup.onreadystatechange = function () {
+      if (ipLookup.readyState == 4 && ipLookup.status == 200) {
+        ipdata = JSON.parse(ipLookup.responseText);
+        city = ipdata.city;
+        country = ipdata.country_code;
+        //document.getElementById("city").innerHTML = city;
+        updateByCity();
+      }
+
+      ipLookup.open("GET", "http://api.ipstack.com/check?access_key=" + IPSTACK, true);
+      ipLookup.send();
+    }
+
+
+    //console.log();
+
+
+  }
+
+
+
+  function updateByCity() {
+    var url = "http://api.openweathermap.org/data/2.5/weather?" + "q=" + city + "," + country + "&APPID=" + APPID;
+    sendRequest(url);
+  }
+
+
+
+  function sendRequest(url) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        weatherdata = JSON.parse(xmlhttp.responseText);
+        temperature = weatherdata.main.temp;
+        location = weatherdata.name;
+        weathertype = weatherdata.weather[0].main;
+        windSpeed = weatherdata.wind.speed;
+        humidity = weatherdata.main.humidity;
+        clouds = weatherdata.clouds;
+        changeImage();
+        updateWeather();
+      }
+    };
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+
+  }
+
+  function fixStyle() {
+    document.getElementById("bg").style.backgroundSize = "cover";
+  }
+
+  function changeImage() {
+    console.log(weathertype);
+    switch (weathertype) {
+      case "Rain":
+
+        document.getElementById("bg").style.background = 'url(images/rain.jpg) no-repeat center center fixed';
+        fixStyle();
+        break;
+      case "Clear":
+
+        document.getElementById("bg").style.background = 'url(images/clear.jpg) no-repeat center center fixed';
+        fixStyle();
+        break;
+      case "Clouds":
+
+        document.getElementById("bg").style.background = 'url(images/cloudy.jpg) no-repeat center center fixed';
+        fixStyle();
+        break;
+      case "Snow":
+
+        document.getElementById("bg").style.background = 'url(images/snow.jpg) no-repeat center center fixed';
+        fixStyle();
+        break;
+      case "Drizzle":
+
+        document.getElementById("bg").style.background = 'url(images/drizzle.jpg) no-repeat center center fixed';
+        fixStyle();
+        break;
+      case "Thunderstorm":
+
+        document.getElementById("bg").style.background = 'url(images/thunder.jpg) no-repeat center center fixed';
+        fixStyle();
+        break;
+      case "Mist":
+        document.getElementById("bg").style.background = 'url(images/mist.jpg) no-repeat center center fixed';
+        fixStyle();
+        break;
+    }
+  }
+
+
+
+  function updateWeather() {
+    var messenger = new Messenger($('#messenger'));
+    console.log(temperature);
+    console.log(location);
+    console.log(weathertype);
+  }
+
+
+
+  function tempFix(temp) {
+    return Math.round(temp - 273.15);
+  }
+
+  var Messenger = function (el) {
     'use strict';
     var m = this;
-    
-    m.init = function(){
-      m.codeletters = "&#*+%?£@§$";
+
+    m.init = function () {
+      m.codeletters = "abcdefghijklmnopqrstuvwxyz";
       m.message = 0;
       m.current_length = 0;
       m.fadeBuffer = false;
       m.messages = [
-        "thick blanket of snow","\nsnuggling the flowerbeds","\n with a winter wrap"
+        line1, line2, line3
       ];
-      
+
       setTimeout(m.animateIn, 100);
     };
-    
-    m.generateRandomString = function(length){
+
+    m.generateRandomString = function (length) {
       var random_text = '';
-      while(random_text.length < length){
-        random_text += m.codeletters.charAt(Math.floor(Math.random()*m.codeletters.length));
-      } 
-      
+      while (random_text.length < length) {
+        random_text += m.codeletters.charAt(Math.floor(Math.random() * m.codeletters.length));
+      }
+
       return random_text;
     };
-    
-    m.animateIn = function(){
-      if(m.current_length < m.messages[m.message].length){
+
+    m.animateIn = function () {
+      if (m.current_length < m.messages[m.message].length) {
         m.current_length = m.current_length + 2;
-        if(m.current_length > m.messages[m.message].length) {
+        if (m.current_length > m.messages[m.message].length) {
           m.current_length = m.messages[m.message].length;
         }
-        
+
         var message = m.generateRandomString(m.current_length);
         $(el).html(message);
-        
+
         setTimeout(m.animateIn, 20);
-      } else { 
+      } else {
         setTimeout(m.animateFadeBuffer, 20);
       }
     };
-    
-    m.animateFadeBuffer = function(){
-      if(m.fadeBuffer === false){
+
+    m.animateFadeBuffer = function () {
+      if (m.fadeBuffer === false) {
         m.fadeBuffer = [];
-        for(var i = 0; i < m.messages[m.message].length; i++){
-          m.fadeBuffer.push({c: (Math.floor(Math.random()*12))+1, l: m.messages[m.message].charAt(i)});
+        for (var i = 0; i < m.messages[m.message].length; i++) {
+          m.fadeBuffer.push({ c: (Math.floor(Math.random() * 12)) + 1, l: m.messages[m.message].charAt(i) });
         }
       }
-      
+
       var do_cycles = false;
-      var message = ''; 
-      
-      for(var i = 0; i < m.fadeBuffer.length; i++){
+      var message = '';
+
+      for (var i = 0; i < m.fadeBuffer.length; i++) {
         var fader = m.fadeBuffer[i];
-        if(fader.c > 0){
+        if (fader.c > 0) {
           do_cycles = true;
           fader.c--;
-          message += m.codeletters.charAt(Math.floor(Math.random()*m.codeletters.length));
+          message += m.codeletters.charAt(Math.floor(Math.random() * m.codeletters.length));
         } else {
           message += fader.l;
         }
       }
-      
+
       $(el).html(message);
-      
-      if(do_cycles === true){
+
+      if (do_cycles === true) {
         setTimeout(m.animateFadeBuffer, 50);
       } else {
         setTimeout(m.cycleText, 2000);
       }
     };
-    
-    m.cycleText = function(){
+
+    m.cycleText = function () {
       m.message = m.message + 1;
-      if(m.message >= m.messages.length){
+      if (m.message >= m.messages.length) {
         m.message = 0;
       }
-      
+
       m.current_length = 0;
       m.fadeBuffer = false;
       $(el).html('');
-      
+
       setTimeout(m.animateIn, 200);
     };
-    
+
     m.init();
   }
-  
-  console.clear();
-  var messenger = new Messenger($('#messenger'));
+
+  //console.clear();
+  getCity();
+
+};
+
+
